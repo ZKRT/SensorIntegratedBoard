@@ -15,7 +15,7 @@
 /*
   Macros
 */
-#define NUM_OF_QTASK     20
+#define NUM_OF_QTASK     10   //code_notice
 
 
 /*

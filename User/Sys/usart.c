@@ -19,7 +19,7 @@
 #include "sys.h"	
 #include "hw_usart.h"
 #include "usart.h"
-
+#include "osusart.h"
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
 /* Private functions ---------------------------------------------------------*/
@@ -78,9 +78,11 @@ void _sys_exit(int x)
 }
 int fputc(int ch, FILE *f)
 {
-  while (USART_GetFlagStatus(USART8, USART_FLAG_TC) == RESET)
-    ;
-  USART_SendData(USART8, (unsigned char) ch);
+//  while (USART_GetFlagStatus(USART2, USART_FLAG_TC) == RESET)
+//    ;
+//  USART_SendData(USART8, (unsigned char) ch);
+	
+	t_osscomm_sendMessage((unsigned char*) &ch, 1, USART5);
 
   return (ch);
 }

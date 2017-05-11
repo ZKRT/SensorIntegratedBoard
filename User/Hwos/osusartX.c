@@ -188,7 +188,10 @@ static  void  _hwuartX_rxIntrSer(uint8_t ustate_item, osusartx_st * ustate, USAR
 	    ustate->_u1rxCnt = 0;
 	  }	
     ustate->_pu1RxPtr->pscommRcvContent[ustate->_u1rxCnt] = USART_ReceiveData(UsartInstance[ustate_item]);
-		ustate->_u1rxCnt++;
+		if(ustate->_u1rxCnt >=sizeof(ustate->_u1RcvArea))  //add de bug by yanly
+			ustate->_u1rxCnt=0;
+		else
+			ustate->_u1rxCnt++;
 		ustate->_u1RxCharTmr = ustate->_u1CharTmrRestart;  //一直循坏扫描这个值，值为0时表示串口帧接收结束
 	}	
 	else
@@ -457,6 +460,7 @@ void _USARTX_IRQHandler(USART_TypeDef* COM)
   if (USART_GetFlagStatus(COM, USART_FLAG_ORE) != RESET)
   {
     (void)USART_ReceiveData(COM);
+		USART_ClearFlag(COM, USART_FLAG_ORE);
 		osusartX_state[num]._u1rxErrflag = TRUE;
   }
 

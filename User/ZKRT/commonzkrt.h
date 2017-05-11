@@ -1,11 +1,11 @@
 /**
   ******************************************************************************
-  * @file    radar.h 
+  * @file    commonzkrt.h 
   * @author  ZKRT
-  * @version V1.0
-  * @date    9-May-2017
-  * @brief   
-	*					 + (1) init
+  * @version V0.0.1
+  * @date    23-December-2016
+  * @brief   Header for commonzkrt.c module
+  *          + (1) init
   ******************************************************************************
   * @attention
   *
@@ -15,26 +15,27 @@
   */
   
 /* Define to prevent recursive inclusion -------------------------------------*/
-#ifndef __RADAR_H
-#define __RADAR_H 
+#ifndef __COMMONZKRT_H
+#define __COMMONZKRT_H
+
 /* Includes ------------------------------------------------------------------*/
 #include "sys.h"
+
 /* Exported macro ------------------------------------------------------------*/
 /* Exported types ------------------------------------------------------------*/
-typedef struct
-{
-	uint8_t id;
-	uint8_t rcs;
-	uint16_t range;
-	uint8_t rollcount;
-	uint8_t snr;	
-}radarData;
-
+/** @defgroup something
+  * @{
+  */ 
+  
+/**
+  * @}
+  */ 
 /* Exported constants --------------------------------------------------------*/
 /* Exported functions ------------------------------------------------------- */
-void radar_Start(void);
-uint8_t radar_parse(const uint8_t *packet, uint16_t packet_len, uint16_t *distance);
-#endif /* __RADAR_H */
+uint16_t CRC16_Cal(uint8_t* ptr, uint8_t len);
+
+#endif /* __COMMONZKRT_H */
+
 /**
   * @}
   */ 
@@ -42,6 +43,5 @@ uint8_t radar_parse(const uint8_t *packet, uint16_t packet_len, uint16_t *distan
 /**
   * @}
   */
-	
-/************************ (C) COPYRIGHT ZKRT *****END OF FILE****/
 
+/************************ (C) COPYRIGHT ZKRT *****END OF FILE****/

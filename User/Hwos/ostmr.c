@@ -12,7 +12,7 @@
 /*
   Macros
 */
-#define NUM_OF_TASK     15
+#define NUM_OF_TASK     10   //code_notice
 
 /* 
   Local types

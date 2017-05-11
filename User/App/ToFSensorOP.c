@@ -17,38 +17,7 @@
 
 #include "ToFSensorOP.h"
 #include "osusart.h"
-
-U16 crc_ta_4[16]={ /* CRC half byte table */
-    0x0000,0x1021,0x2042,0x3063,0x4084,0x50a5,0x60c6,0x70e7,
-    0x8108,0x9129,0xa14a,0xb16b,0xc18c,0xd1ad,0xe1ce,0xf1ef,
-};
-
-/**
-  * @brief  计算数据包CRC16 CCITT校验码
-  * @param  
-  *			1、ptr：数据包首地址
-  *			2、len：数据包要参与计算的数据字节数
-  * @note   
-  * @retval 返回数据包的 CRC16 值
-  */
-U16 CRC16_Cal(U8* ptr, U8 len)
-{
-    U16 crc = 0xffff;
-	U8 high = 0x00;
-
-    while(len-- != 0)
-    {
-        high = (U8)(crc/4096);
-        crc <<= 4;
-        crc ^= crc_ta_4[high^(*ptr/16)];
-        high = (U8)(crc/4096);
-        crc <<= 4;
-        crc ^= crc_ta_4[high^(*ptr&0x0f)];
-        ptr++;
-    }
-    return crc;
-}
-
+#include "commonzkrt.h"
 
 /**
   * @brief  传感器返回的数据包解析
@@ -149,9 +118,9 @@ void ToF_ContinuousStart(void)
 {
 	U8 comm[] = {0x0A, 0x24, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x0F, 0x72};
 //	enableEXINT0();
-	t_osscomm_sendMessage(comm, 10, USART1);
 	t_osscomm_sendMessage(comm, 10, USART2);
 	t_osscomm_sendMessage(comm, 10, USART3);
+	t_osscomm_sendMessage(comm, 10, USART4);
 }
 
 ///**
@@ -238,7 +207,7 @@ U8 ToF_parse(U8 *packet, U16 packet_len, U16 *distance)
 {
 	U16 crc16_cal = 0x0000;
 	U16 crc16_packet = 0x0000;
-	U8 len = packet[1]+2;
+	U8 len = packet[1];
 	if(packet[0] != SENSOR_PACKET_START)
 	{
 		return 0;
@@ -247,21 +216,22 @@ U8 ToF_parse(U8 *packet, U16 packet_len, U16 *distance)
 	{
 		return 0;
 	}	
-	crc16_packet = packet[len-2]<<8;//取出数据包crc16
-	crc16_packet |= packet[len-1];
-	crc16_cal = CRC16_Cal(packet+2, len-4);
+	crc16_packet = packet[len]<<8;//取出数据包crc16
+	crc16_packet |= packet[len+1];
+	crc16_cal = CRC16_Cal(packet+2, len-2);
+	
 	if(crc16_cal != crc16_packet)
 	{
 		return 0;
 	}
 	sensorData dbuf;
-	dbuf.distance = (packet[5] << 8)|packet[6];
+	dbuf.distance = ((packet[5] << 8)|packet[6])/10;
 	dbuf.magnitude = (packet[7] << 8)|packet[8];
 	dbuf.magnitude_exp = packet[9];
 	dbuf.ambient_adc = packet[10];
 	dbuf.precision = (packet[11] << 8)|packet[12];
 
-	if(dbuf.distance >=32000)  //不可信
+	if(dbuf.distance >=3200)  //不可信
 	{
 		return 0;
 	}	
@@ -270,7 +240,7 @@ U8 ToF_parse(U8 *packet, U16 packet_len, U16 *distance)
 	{
 		return 0;
 	}
-	*distance = dbuf.distance;
+	*distance = dbuf.distance;  //unit:cm
 	return 1;	
 }
 //zkrt fuction end

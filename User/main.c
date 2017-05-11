@@ -16,6 +16,8 @@
 #include "sys.h"
 #include "osusart.h"
 #include "appdistance.h"
+#include "appcan.h"
+#include "appupload.h"
 
 /* Private function prototypes -----------------------------------------------*/
 /* Private functions ---------------------------------------------------------*/
@@ -25,60 +27,61 @@
   * @param  None
   * @retval None
   */
-uint8_t testbuf[100]="HELLO";
-uint16_t testbuf_len;
+//uint8_t testbuf[100]="HELLO";
+//uint16_t testbuf_len;
 int main(void)
 {
 	BSP_Init();
   /* Infinite Loop */
-	//appdistance_init();
+	appdistance_init();
+	appcan_init();
+	appupload_init();
 	
   while(1)
   {
 		/* product code start*/
-		
-//		appdistance_prcs();	   																	//避障传感器处理流程
-//    appcan_prcs();                                          //CAN通道数据处理流程
+		appdistance_prcs();	   																	//避障传感器处理流程
+    appupload_prcs();                                       //定时上传传感器数据
 		
 		/* product code end*/
 		
-		/* test code start*/
-		
-		/* this is test routine of usart interface in user layer*/
-		if(t_osscomm_ReceiveMessage(testbuf, &testbuf_len, USART1)==SCOMM_RET_OK)
-		{
-			t_osscomm_sendMessage(testbuf, testbuf_len, USART1);
-		}	
-		if(t_osscomm_ReceiveMessage(testbuf, &testbuf_len, USART2)==SCOMM_RET_OK)
-		{
-			t_osscomm_sendMessage(testbuf, testbuf_len, USART2);
-		}	
-		if(t_osscomm_ReceiveMessage(testbuf, &testbuf_len, USART3)==SCOMM_RET_OK)
-		{
-			t_osscomm_sendMessage(testbuf, testbuf_len, USART3);
-		}	
-		if(t_osscomm_ReceiveMessage(testbuf, &testbuf_len, USART4)==SCOMM_RET_OK)
-		{
-			t_osscomm_sendMessage(testbuf, testbuf_len, USART4);
-		}			
-		if(t_osscomm_ReceiveMessage(testbuf, &testbuf_len, USART5)==SCOMM_RET_OK)
-		{
-			t_osscomm_sendMessage(testbuf, testbuf_len, USART5);
-		}	
-		if(t_osscomm_ReceiveMessage(testbuf, &testbuf_len, USART6)==SCOMM_RET_OK)
-		{
-			t_osscomm_sendMessage(testbuf, testbuf_len, USART6);
-		}	
-		if(t_osscomm_ReceiveMessage(testbuf, &testbuf_len, USART7)==SCOMM_RET_OK)
-		{
-			t_osscomm_sendMessage(testbuf, testbuf_len, USART7);
-		}	
-		if(t_osscomm_ReceiveMessage(testbuf, &testbuf_len, USART8)==SCOMM_RET_OK)
-		{
-			t_osscomm_sendMessage(testbuf, testbuf_len, USART8);
-		}			
-		
-		/* test code end*/
+//		/* test code start*/
+//		
+//		/* this is test routine of usart interface in user layer*/
+//		if(t_osscomm_ReceiveMessage(testbuf, &testbuf_len, USART1)==SCOMM_RET_OK)
+//		{
+//			t_osscomm_sendMessage(testbuf, testbuf_len, USART1);
+//		}	
+//		if(t_osscomm_ReceiveMessage(testbuf, &testbuf_len, USART2)==SCOMM_RET_OK)
+//		{
+//			t_osscomm_sendMessage(testbuf, testbuf_len, USART2);
+//		}	
+//		if(t_osscomm_ReceiveMessage(testbuf, &testbuf_len, USART3)==SCOMM_RET_OK)
+//		{
+//			t_osscomm_sendMessage(testbuf, testbuf_len, USART3);
+//		}	
+//		if(t_osscomm_ReceiveMessage(testbuf, &testbuf_len, USART4)==SCOMM_RET_OK)
+//		{
+//			t_osscomm_sendMessage(testbuf, testbuf_len, USART4);
+//		}			
+//		if(t_osscomm_ReceiveMessage(testbuf, &testbuf_len, USART5)==SCOMM_RET_OK)
+//		{
+//			t_osscomm_sendMessage(testbuf, testbuf_len, USART5);
+//		}	
+//		if(t_osscomm_ReceiveMessage(testbuf, &testbuf_len, USART6)==SCOMM_RET_OK)
+//		{
+//			t_osscomm_sendMessage(testbuf, testbuf_len, USART6);
+//		}	
+//		if(t_osscomm_ReceiveMessage(testbuf, &testbuf_len, USART7)==SCOMM_RET_OK)
+//		{
+//			t_osscomm_sendMessage(testbuf, testbuf_len, USART7);
+//		}	
+//		if(t_osscomm_ReceiveMessage(testbuf, &testbuf_len, USART8)==SCOMM_RET_OK)
+//		{
+//			t_osscomm_sendMessage(testbuf, testbuf_len, USART8);
+//		}			
+//		
+//		/* test code end*/
   }
 }
 

@@ -42,6 +42,8 @@ typedef struct
 /* Exported functions ------------------------------------------------------- */
 void appdistance_prcs(void);
 void appdistance_init(void);
+
+extern distance_info_t global_distance;
 #endif /* __APPDISTANCE_H */
 /**
   * @}

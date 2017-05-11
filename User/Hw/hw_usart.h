@@ -17,7 +17,7 @@
 
 #define USART_MAX_INDEX   8
 
-#define USART_DATA_SIZE      		100
+#define USART_DATA_SIZE      		200
 
 #define USART_TX_DATA_SIZE      USART_DATA_SIZE
 #define USART_RX_DATA_SIZE      USART_DATA_SIZE
