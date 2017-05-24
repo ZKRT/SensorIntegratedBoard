@@ -533,6 +533,11 @@
               <FileType>5</FileType>
               <FilePath>..\..\..\User\Hw\hw_usart.h</FilePath>
             </File>
+            <File>
+              <FileName>led.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\User\Hw\led.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -1633,6 +1638,11 @@
               <FileName>hw_usart.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\..\..\User\Hw\hw_usart.h</FilePath>
+            </File>
+            <File>
+              <FileName>led.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\User\Hw\led.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -2864,6 +2874,11 @@
               <FileType>5</FileType>
               <FilePath>..\..\..\User\Hw\hw_usart.h</FilePath>
             </File>
+            <File>
+              <FileName>led.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\User\Hw\led.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -3878,6 +3893,11 @@
               <FileName>hw_usart.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\..\..\User\Hw\hw_usart.h</FilePath>
+            </File>
+            <File>
+              <FileName>led.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\User\Hw\led.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -5109,6 +5129,11 @@
               <FileType>5</FileType>
               <FilePath>..\..\..\User\Hw\hw_usart.h</FilePath>
             </File>
+            <File>
+              <FileName>led.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\User\Hw\led.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -6126,6 +6151,11 @@
               <FileType>5</FileType>
               <FilePath>..\..\..\User\Hw\hw_usart.h</FilePath>
             </File>
+            <File>
+              <FileName>led.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\User\Hw\led.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -7140,6 +7170,11 @@
               <FileName>hw_usart.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\..\..\User\Hw\hw_usart.h</FilePath>
+            </File>
+            <File>
+              <FileName>led.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\User\Hw\led.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -8156,6 +8191,11 @@
               <FileType>5</FileType>
               <FilePath>..\..\..\User\Hw\hw_usart.h</FilePath>
             </File>
+            <File>
+              <FileName>led.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\User\Hw\led.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -9170,6 +9210,11 @@
               <FileName>hw_usart.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\..\..\User\Hw\hw_usart.h</FilePath>
+            </File>
+            <File>
+              <FileName>led.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\User\Hw\led.c</FilePath>
             </File>
           </Files>
         </Group>
