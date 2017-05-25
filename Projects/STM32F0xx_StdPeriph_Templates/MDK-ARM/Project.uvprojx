@@ -448,6 +448,11 @@
               <FileType>1</FileType>
               <FilePath>..\..\..\User\App\appcan.c</FilePath>
             </File>
+            <File>
+              <FileName>Temperature.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\User\App\Temperature.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -1548,6 +1553,11 @@
               <FileName>appcan.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\User\App\appcan.c</FilePath>
+            </File>
+            <File>
+              <FileName>Temperature.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\User\App\Temperature.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -2779,6 +2789,11 @@
               <FileType>1</FileType>
               <FilePath>..\..\..\User\App\appcan.c</FilePath>
             </File>
+            <File>
+              <FileName>Temperature.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\User\App\Temperature.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -3793,6 +3808,11 @@
               <FileName>appcan.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\User\App\appcan.c</FilePath>
+            </File>
+            <File>
+              <FileName>Temperature.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\User\App\Temperature.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -5024,6 +5044,11 @@
               <FileType>1</FileType>
               <FilePath>..\..\..\User\App\appcan.c</FilePath>
             </File>
+            <File>
+              <FileName>Temperature.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\User\App\Temperature.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -6041,6 +6066,11 @@
               <FileType>1</FileType>
               <FilePath>..\..\..\User\App\appcan.c</FilePath>
             </File>
+            <File>
+              <FileName>Temperature.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\User\App\Temperature.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -7055,6 +7085,11 @@
               <FileName>appcan.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\User\App\appcan.c</FilePath>
+            </File>
+            <File>
+              <FileName>Temperature.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\User\App\Temperature.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -8071,6 +8106,11 @@
               <FileType>1</FileType>
               <FilePath>..\..\..\User\App\appcan.c</FilePath>
             </File>
+            <File>
+              <FileName>Temperature.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\User\App\Temperature.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -9085,6 +9125,11 @@
               <FileName>appcan.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\User\App\appcan.c</FilePath>
+            </File>
+            <File>
+              <FileName>Temperature.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\User\App\Temperature.c</FilePath>
             </File>
           </Files>
         </Group>

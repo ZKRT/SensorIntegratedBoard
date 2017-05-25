@@ -18,6 +18,7 @@
 #include "appdistance.h"
 #include "appcan.h"
 #include "appupload.h"
+#include "Temperature.h"
 
 /* Private function prototypes -----------------------------------------------*/
 /* Private functions ---------------------------------------------------------*/
@@ -27,27 +28,38 @@
   * @param  None
   * @retval None
   */
-//uint8_t testbuf[100]="HELLO";
-//uint16_t testbuf_len;
+uint8_t testbuf[100]="HELLO";
+uint16_t testbuf_len;
 int main(void)
 {
 	BSP_Init();
+	TemperatureInit();
   /* Infinite Loop */
 	appdistance_init();
 	appcan_init();
 	appupload_init();
 	
+	t_systmr_insertQuickTask(TemperatureTask,50,OSTMR_PERIODIC);
+	//t_ostmr_insertTask(,500,OSTMR_PERIODIC);
+	
   while(1)
   {
 		/* product code start*/
-		appdistance_prcs();	   																	//避障传感器处理流程
-    appupload_prcs();                                       //定时上传传感器数据
+//		appdistance_prcs();	   																	//避障传感器处理流程
+//    appupload_prcs();                                       //定时上传传感器数据
 		
 		/* product code end*/
 		
 //		/* test code start*/
 //		
-//		/* this is test routine of usart interface in user layer*/
+		if(TemperatureFlag)
+		{
+			TemperatureSensorScanTask();
+			TemperatureFlag = 0;
+		}
+			DisplayTemperatureValue();
+		
+		/* this is test routine of usart interface in user layer*/
 //		if(t_osscomm_ReceiveMessage(testbuf, &testbuf_len, USART1)==SCOMM_RET_OK)
 //		{
 //			t_osscomm_sendMessage(testbuf, testbuf_len, USART1);
@@ -64,22 +76,25 @@ int main(void)
 //		{
 //			t_osscomm_sendMessage(testbuf, testbuf_len, USART4);
 //		}			
-//		if(t_osscomm_ReceiveMessage(testbuf, &testbuf_len, USART5)==SCOMM_RET_OK)
-//		{
-//			t_osscomm_sendMessage(testbuf, testbuf_len, USART5);
-//		}	
-//		if(t_osscomm_ReceiveMessage(testbuf, &testbuf_len, USART6)==SCOMM_RET_OK)
-//		{
-//			t_osscomm_sendMessage(testbuf, testbuf_len, USART6);
-//		}	
-//		if(t_osscomm_ReceiveMessage(testbuf, &testbuf_len, USART7)==SCOMM_RET_OK)
-//		{
-//			t_osscomm_sendMessage(testbuf, testbuf_len, USART7);
-//		}	
-//		if(t_osscomm_ReceiveMessage(testbuf, &testbuf_len, USART8)==SCOMM_RET_OK)
-//		{
-//			t_osscomm_sendMessage(testbuf, testbuf_len, USART8);
-//		}			
+		if(t_osscomm_ReceiveMessage(testbuf, &testbuf_len, USART5)==SCOMM_RET_OK)
+		{
+			//t_osscomm_sendMessage(testbuf, testbuf_len, USART5);
+		}	
+		if(t_osscomm_ReceiveMessage(testbuf, &testbuf_len, USART6)==SCOMM_RET_OK)
+		{
+				/*get left temperature sensor value*/
+				infrared_Parser(testbuf,testbuf_len,T_LEFT);
+		}	
+		if(t_osscomm_ReceiveMessage(testbuf, &testbuf_len, USART7)==SCOMM_RET_OK)
+		{
+				/*get right temperature sensor value*/
+				infrared_Parser(testbuf,testbuf_len,T_RIGHT);
+		}	
+		if(t_osscomm_ReceiveMessage(testbuf, &testbuf_len, USART8)==SCOMM_RET_OK)
+		{
+				/*get atmosphere temperature sensors value*/
+				Atmosphere_Parser(testbuf,testbuf_len);
+		}
 //		
 //		/* test code end*/
   }
