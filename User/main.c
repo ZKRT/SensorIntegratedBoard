@@ -33,7 +33,7 @@
 int main(void)
 {
 	BSP_Init();
-	ostmr_wait(50);  //wait 5s 
+	ostmr_wait(50);  //wait 5 senconds for sensor for ready
   /* Infinite Loop */
 	appdistance_init();
 	appcan_init();

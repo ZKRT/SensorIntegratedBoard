@@ -251,7 +251,7 @@ static  void  _hwuartX_1msTask(void)
 			{
 				osusartX_state[i]._u1Txing     = FALSE;
 	//      _u1WrTxRegEn = FALSE;
-				USART_ITConfig(UsartInstance[i], USART_IT_TXE, DISABLE); //add yan141111
+				USART_ITConfig(UsartInstance[i], USART_IT_TXE, DISABLE); //add yan141111 
 				osusartX_state[i]._u1txCnt     = 0;
 				osusartX_state[i]._pu1TxPtr    = NULL;
 			}
