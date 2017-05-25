@@ -170,7 +170,7 @@ uint8_t tof_radar_recv_handle(uint8_t *buf, uint16_t *buflen, uint8_t port, uint
 			{
 				distance10_v_index[distance_num] = 0;
 				global_distance.distance_data[distance_num] = vlaue_avg_filter(&distance10_v[distance_num][0], D_FILTER_CNY);
-//				printf("distace[%d]=%d\n", distance_num, global_distance.distance_data[distance_num]);  //zkrt_debug
+				printf("distace[%d]=%d\n", distance_num, global_distance.distance_data[distance_num]);  //zkrt_debug
 			}
 		}
 	}

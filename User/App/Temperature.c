@@ -139,7 +139,7 @@ void TimingGetSensorStatusTask()
 void Atmosphere_Parser(uint8_t atmosphereBuf[],uint16_t txLen)
 {
 		uint8_t sumCheck;
-		uint8_t i;
+		uint16_t i;
 		uint8_t ID;
 		
 		/*accumulation*/
