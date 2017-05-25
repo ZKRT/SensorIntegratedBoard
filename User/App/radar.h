@@ -33,6 +33,7 @@ typedef struct
 /* Exported constants --------------------------------------------------------*/
 /* Exported functions ------------------------------------------------------- */
 void radar_Start(void);
+void radar_easy_Start(void);
 uint8_t radar_parse(const uint8_t *packet, uint16_t packet_len, uint16_t *distance);
 #endif /* __RADAR_H */
 /**
