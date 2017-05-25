@@ -47,8 +47,8 @@ int main(void)
   while(1)
   {
 		/* product code start, the proposed process should not be delayed*/
-//		appdistance_prcs();	   																	//避障传感器处理流程
-//    appupload_prcs();                                       //定时上传传感器数据
+		appdistance_prcs();	   																	//避障传感器处理流程
+    appupload_prcs();                                       //定时上传传感器数据
 		appled_process();                                       //LED流程
 		/* product code end*/
 		
