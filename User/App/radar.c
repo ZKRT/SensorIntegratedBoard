@@ -44,9 +44,22 @@ void radar_Start(void)
 	comm[4] = 0xFE;
 	comm[5] = 0x00;
 	t_osscomm_sendMessage(comm, 14, USART1);  //开始-连接设备
-	ostmr_wait(1);  //wait 100ms
+	ostmr_wait(2);  //wait 100ms
 	t_osscomm_sendMessage(comm, 14, USART1);  //开始-连接设备
 	ostmr_wait(1);  //wait 100ms
+}
+/**
+  * @brief  传感器启动发送距离信息
+  * @param  
+  * @note   
+  * @retval 
+  */
+void radar_easy_Start(void)
+{
+	uint8_t comm[] = {0xAA, 0xAA, 0x00, 0x02, 0xFE, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x55, 0x55};
+	t_osscomm_sendMessage(comm, 14, USART1);  //开始-连接设备
+//	ostmr_wait(1);  //wait 100ms
+//	t_osscomm_sendMessage(comm, 14, USART1);  //开始-连接设备
 }
 /**
   * @brief  传感器返回的数据包解析

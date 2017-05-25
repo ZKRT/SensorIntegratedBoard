@@ -29,10 +29,11 @@ uint16_t dutbuf_len; //the actual received length of distance_utbuf
 uint16_t distance10_v[4][D_FILTER_CNY]={0}; //4个方向障碍物的连续10个障碍物距离数据，用来作平均过滤
 uint8_t distance10_v_index[4]={0}; //distance10_v[4][D_FILTER_CNY]存储的索引，每个方向都是存满D_FILTER_CNY个后进行平均过滤
 distance_info_t global_distance; //距离信息（经过过滤处理）
+volatile uint8_t getdistance_flag=0;  //1-每个周期发送一次命令获取传感器数据
 /* Private functions ---------------------------------------------------------*/
 uint16_t vlaue_avg_filter(const uint16_t *value, uint16_t num);
 uint8_t tof_radar_recv_handle(uint8_t *buf, uint16_t *buflen, uint8_t port, uint8_t distance_num);
-
+void get_distance_cmdTask(void);
 /**
   * @brief  appdistance_init
   * @param  None
@@ -42,6 +43,7 @@ void appdistance_init(void)
 {
 	ToF_ContinuousStart();
 	radar_Start();
+	t_ostmr_insertTask(get_distance_cmdTask, 30000, OSTMR_PERIODIC);  
 }
 /**
   * @brief  appdistance_prcs int main
@@ -77,6 +79,15 @@ void appdistance_prcs(void)
 		ret =0;
 		memset(distance_utbuf, 0, sizeof(distance_utbuf));
 	}		
+	
+	//get distance cmd send in period of 30s
+	if(getdistance_flag)
+	{
+		getdistance_flag = 0;
+		ToF_ContinuousStart();
+		radar_easy_Start();
+//		printf("distance sensor start\n");  //zkrt_debug
+	}
 }
 /**
   * @brief  vlaue_avg_filter 去最高最低求平均值
@@ -170,12 +181,24 @@ uint8_t tof_radar_recv_handle(uint8_t *buf, uint16_t *buflen, uint8_t port, uint
 			{
 				distance10_v_index[distance_num] = 0;
 				global_distance.distance_data[distance_num] = vlaue_avg_filter(&distance10_v[distance_num][0], D_FILTER_CNY);
-//				printf("distace[%d]=%d\n", distance_num, global_distance.distance_data[distance_num]);  //zkrt_debug
+				printf("distace[%d]=%d\n", distance_num, global_distance.distance_data[distance_num]);  //zkrt_debug
 			}
 		}
 	}
 	return ret;
 }
+/**
+  * @brief  get_distance_cmdTask
+  * @param  None
+  * @retval None
+  */
+void get_distance_cmdTask(void)
+{
+	if(!getdistance_flag)
+	{
+		getdistance_flag = 1;
+	}	
+}	
 /**
 *@
 */
