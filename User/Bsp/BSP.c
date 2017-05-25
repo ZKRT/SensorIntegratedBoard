@@ -5,6 +5,7 @@
 #include "ostmr.h"
 #include "osqtmr.h"
 #include "osusart.h"
+#include "can.h"
 
 static void RCC_Configuration(void);
 static void GPIO_Configuration(void);
@@ -43,6 +44,7 @@ void BSP_Init(void)
 	b_systmr_init();
 	os_usart_init();
 	usart_config();
+	CAN_Mode_Init();
 }
 /**
   * @brief  Configures the different system clocks.
@@ -185,8 +187,17 @@ static void GPIO_Configuration(void)
   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
   GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
-  GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
+  GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;
   GPIO_Init(GPIOA, &GPIO_InitStructure); 	
+	
+	/*LED Pins configuration  *************************************************/    //add 
+  /* Connect pin to Periph */
+  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_13 | GPIO_Pin_14;
+  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
+  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+  GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+  GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
+  GPIO_Init(GPIOB, &GPIO_InitStructure); 	
 }
 
 /**
@@ -230,7 +241,7 @@ static void NVIC_Configuration(void)
 	
   /* CAN IRQ Channel configuration */
   NVIC_InitStructure.NVIC_IRQChannel = CEC_CAN_IRQn;
-  NVIC_InitStructure.NVIC_IRQChannelPriority = 0x03;
+  NVIC_InitStructure.NVIC_IRQChannelPriority = 0x01;
   NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
   NVIC_Init(&NVIC_InitStructure);
 }

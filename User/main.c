@@ -19,7 +19,7 @@
 #include "appcan.h"
 #include "appupload.h"
 #include "Temperature.h"
-
+#include "led.h"
 /* Private function prototypes -----------------------------------------------*/
 /* Private functions ---------------------------------------------------------*/
 
@@ -33,21 +33,23 @@ uint16_t testbuf_len;
 int main(void)
 {
 	BSP_Init();
+	ostmr_wait(50);  //wait 5 senconds for sensor for ready
 	TemperatureInit();
   /* Infinite Loop */
 	appdistance_init();
 	appcan_init();
 	appupload_init();
+	appled_init();
 	
 	t_systmr_insertQuickTask(TemperatureTask,50,OSTMR_PERIODIC);
 	//t_ostmr_insertTask(,500,OSTMR_PERIODIC);
 	
   while(1)
   {
-		/* product code start*/
+		/* product code start, the proposed process should not be delayed*/
 //		appdistance_prcs();	   																	//避障传感器处理流程
 //    appupload_prcs();                                       //定时上传传感器数据
-		
+		appled_process();                                       //LED流程
 		/* product code end*/
 		
 //		/* test code start*/

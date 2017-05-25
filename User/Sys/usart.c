@@ -53,7 +53,7 @@ void usart_config(void)
     USART_ITConfig(UsartInstance[UsartIndex], USART_IT_TXE, DISABLE);
     /* Enable the 8xUSARTs */
     USART_Cmd(UsartInstance[UsartIndex], ENABLE);
-		USART_ClearFlag(UsartInstance[UsartIndex], USART_FLAG_TC);
+//		USART_ClearFlag(UsartInstance[UsartIndex], USART_FLAG_TC);
 		USART_ClearFlag(UsartInstance[UsartIndex], USART_FLAG_RXNE);
   }
 }
@@ -78,12 +78,10 @@ void _sys_exit(int x)
 }
 int fputc(int ch, FILE *f)
 {
-//  while (USART_GetFlagStatus(USART2, USART_FLAG_TC) == RESET)
-//    ;
-//  USART_SendData(USART8, (unsigned char) ch);
-	
-	t_osscomm_sendMessage((unsigned char*) &ch, 1, USART5);
-
+	while (USART_GetFlagStatus(USART5, USART_FLAG_TC) == RESET)
+		;
+	USART_SendData(USART5, (unsigned char) ch);
+//	t_osscomm_sendMessage((unsigned char*) &ch, 1, USART5);
   return (ch);
 }
 #endif

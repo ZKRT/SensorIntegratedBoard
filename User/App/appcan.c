@@ -65,9 +65,17 @@ void appcan_hb_pack(void)
   */
 uint8_t appcan_hbpacket_send(void)
 {
+	uint8_t *data = (uint8_t*)&Upload_info_st;
+//	int i;
 	uint8_t ret;
 	appcan_hb_pack();
-	ret = CAN1_send_message_fun((uint8_t*)&Upload_info_st, Upload_info_st.datalen+5);  //len=data len+datalen+start+end+crc2
+//	for(i=0; i<Upload_info_st.datalen+6; i++)
+//	{
+//		printf("%x ", data[i]);
+//	}
+//	printf("   >>>>>>\n");
+
+	ret = CAN1_send_message_fun(data, Upload_info_st.datalen+6);  //len=data's len+datalen+start+end+crc2+cmd
 	return ret;
 }
 

@@ -22,8 +22,9 @@
 #include "osqtmr.h"
 #include "ostmr.h"
 /* Private macro -------------------------------------------------------------*/
-#define UPLOAD_TIMEOUT		 			    20 //20ms
+#define UPLOAD_TIMEOUT		 			    30 //30ms
 #define UPLOAD_TIMEOUT_CNT		 			1 //
+#define UPLOAD_TIMECNT_INIT         5000/UPLOAD_TIMEOUT
 /* Private variables ---------------------------------------------------------*/
 uint16_t upload_timecnt;
 /* Private functions ---------------------------------------------------------*/
@@ -38,7 +39,7 @@ static void data_upload_msTask(void);
 void appupload_init(void)
 {
 	t_systmr_insertQuickTask(data_upload_msTask, UPLOAD_TIMEOUT, OSTMR_PERIODIC);
-	upload_timecnt = 500; //初始化10秒后才开始定时上传任务
+	upload_timecnt = UPLOAD_TIMECNT_INIT; //初始化10秒后才开始定时上传任务
 }
 /**
   * @brief  appupload_prcs
