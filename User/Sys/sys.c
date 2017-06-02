@@ -71,3 +71,25 @@ void assert_failed(uint8_t* file, uint32_t line)
   }
 }
 #endif
+/**
+  * @brief  Inserts a delay time.
+  * @param  nTime: specifies the delay time length, in milliseconds.
+  * @retval None
+  */
+void iwdg_init(void)
+{
+	IWDG_WriteAccessCmd(IWDG_WriteAccess_Enable); //Enables write access to IWDG_PR and IWDG_RLR registers.
+	IWDG_SetPrescaler(IWDG_Prescaler_64);		//base 1.6ms
+	IWDG_SetReload(2000);	//feed dog time  
+	IWDG_ReloadCounter();
+	IWDG_Enable();
+}
+/**
+  * @brief  Inserts a delay time.
+  * @param  nTime: specifies the delay time length, in milliseconds.
+  * @retval None
+  */
+void iwdg_feed(void)
+{
+  IWDG_ReloadCounter();
+}
