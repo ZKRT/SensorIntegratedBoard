@@ -231,16 +231,26 @@ U8 ToF_parse(U8 *packet, U16 packet_len, U16 *distance)
 	dbuf.ambient_adc = packet[10];
 	dbuf.precision = (packet[11] << 8)|packet[12];
 
-	if(dbuf.distance >=3200)  //不可信
-	{
-		return 0;
-	}	
+//	if(dbuf.distance >=3200)  //不可信  //zkrt_debug
+//	{
+//		return 0;
+//	}	
 	
-	if((float)((dbuf.magnitude)/100) < 43) //不可信
+	if((float)((dbuf.magnitude)/100) < 43) //不可信时，将距离数据修改为无效数据
 	{
-		return 0;
+		*distance = 5000;
+		return 1;
 	}
+	
+	
 	*distance = dbuf.distance;  //unit:cm
+	
+	if(*distance >5000)  //zkrt_notice:务必放在最后，如果此处还需要做数据处理务必考虑此处
+		*distance = 6000;
+	
+	if(*distance <30)  //zkrt_notice:务必放在最后，如果此处还需要做数据处理务必考虑此处
+		*distance = 7000;
+	
 	return 1;	
 }
 //zkrt fuction end
