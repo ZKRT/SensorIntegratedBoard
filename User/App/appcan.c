@@ -22,6 +22,7 @@
 #include "appdistance.h"
 #include "appcan.h"
 #include "commonzkrt.h"
+#include "temperature.h"
 
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
@@ -54,6 +55,14 @@ void appcan_hb_pack(void)
 	Upload_info_st.back_D = global_distance.distance_data[BACK_NUM];
 	Upload_info_st.right_D = global_distance.distance_data[RIGHT_NUM];
 	//temperature pack  //zkrt_todo: 温度封包 曾工赶紧做
+	Upload_info_st.left_T  = TSensor[T_LEFT].TOvalue;
+	Upload_info_st.right_T = TSensor[T_RIGHT].TOvalue;
+	Upload_info_st.m1_T = TSensor[T_M1].TOvalue;
+	Upload_info_st.m2_T = TSensor[T_M2].TOvalue;
+	Upload_info_st.m3_T = TSensor[T_M3].TOvalue;
+	Upload_info_st.m4_T = TSensor[T_M4].TOvalue;
+	
+	Upload_info_st.body_T = BodyTemperature;
 	
 	//crc pack
 	Upload_info_st.crc = CRC16_Cal(((uint8_t*)&Upload_info_st)+3, Upload_info_st.datalen);

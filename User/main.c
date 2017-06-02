@@ -54,12 +54,12 @@ int main(void)
 		
 //		/* test code start*/
 //		
-		if(TemperatureFlag)
-		{
-			TemperatureSensorScanTask();
-			TemperatureFlag = 0;
-		}
-			DisplayTemperatureValue();
+//		if(TemperatureFlag)
+//		{
+//			TemperatureSensorScanTask();
+//			TemperatureFlag = 0;
+//		}
+//			DisplayTemperatureValue();
 		
 		/* this is test routine of usart interface in user layer*/
 //		if(t_osscomm_ReceiveMessage(testbuf, &testbuf_len, USART1)==SCOMM_RET_OK)
@@ -78,27 +78,28 @@ int main(void)
 //		{
 //			t_osscomm_sendMessage(testbuf, testbuf_len, USART4);
 //		}			
-		if(t_osscomm_ReceiveMessage(testbuf, &testbuf_len, USART5)==SCOMM_RET_OK)
-		{
-			//t_osscomm_sendMessage(testbuf, testbuf_len, USART5);
-		}	
-		if(t_osscomm_ReceiveMessage(testbuf, &testbuf_len, USART6)==SCOMM_RET_OK)
-		{
-				/*get left temperature sensor value*/
-				infrared_Parser(testbuf,testbuf_len,T_LEFT);
-		}	
-		if(t_osscomm_ReceiveMessage(testbuf, &testbuf_len, USART7)==SCOMM_RET_OK)
-		{
-				/*get right temperature sensor value*/
-				infrared_Parser(testbuf,testbuf_len,T_RIGHT);
-		}	
-		if(t_osscomm_ReceiveMessage(testbuf, &testbuf_len, USART8)==SCOMM_RET_OK)
-		{
-				/*get atmosphere temperature sensors value*/
-				Atmosphere_Parser(testbuf,testbuf_len);
-		}
+//		if(t_osscomm_ReceiveMessage(testbuf, &testbuf_len, USART5)==SCOMM_RET_OK)
+//		{
+//			//t_osscomm_sendMessage(testbuf, testbuf_len, USART5);
+//		}	
+//		if(t_osscomm_ReceiveMessage(testbuf, &testbuf_len, USART6)==SCOMM_RET_OK)
+//		{
+//				/*get left temperature sensor value*/
+//				infrared_Parser(testbuf,testbuf_len,T_LEFT);
+//		}	
+//		if(t_osscomm_ReceiveMessage(testbuf, &testbuf_len, USART7)==SCOMM_RET_OK)
+//		{
+//				/*get right temperature sensor value*/
+//				infrared_Parser(testbuf,testbuf_len,T_RIGHT);
+//		}	
+//		if(t_osscomm_ReceiveMessage(testbuf, &testbuf_len, USART8)==SCOMM_RET_OK)
+//		{
+//				/*get atmosphere temperature sensors value*/
+//				Atmosphere_Parser(testbuf,testbuf_len);
+//		}
 //		
 //		/* test code end*/
+			Temperature();
   }
 }
 

@@ -28,8 +28,8 @@
 #define RS485_T   GPIO_SetBits(RS485_PORT,RS485_PIN)
 #define RS485_R		GPIO_ResetBits(RS485_PORT,RS485_PIN)
 	
-extern volatile uint8_t TemperatureFlag;
-
+#define DisplayData  1
+	
 typedef enum SENSOR_INDEX
 {
 	T_M1=0x01,				
@@ -69,6 +69,9 @@ typedef struct TEMPERATURE_DATA
 }TemperatureSensor;
 
 /* Exported constants --------------------------------------------------------*/
+extern volatile uint8_t TemperatureFlag;
+extern TemperatureSensor TSensor[7];
+extern int16_t BodyTemperature;
 /* Exported functions ------------------------------------------------------- */
 void infrared_Parser(uint8_t infraredBuf[],uint16_t txLen,uint8_t ID);
 void Atmosphere_Parser(uint8_t atmosphereBuf[],uint16_t txLen);
@@ -78,6 +81,8 @@ void DisplayTemperatureValue(void);
 void TemperatureSensorScanTask(void);
 void TemperatureTask(void);
 void TemperatureInit(void);
+void TemperatureDataProcess(void);
+void Temperature(void);
 #endif /* __INFRARED_H */
 /**
   * @}

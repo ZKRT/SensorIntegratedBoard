@@ -57,9 +57,62 @@
   */
 
 TemperatureSensor TSensor[7];
+int16_t BodyTemperature=0;
+
 int8_t AtmosphereSensorNO = T_M1;
 uint8_t CallSensorPackage[4];
 volatile uint8_t TemperatureFlag=0;
+volatile uint8_t DataProcessFlag=0;
+
+uint8_t infraredBuf[100];
+uint16_t infraredBuf_len;
+
+uint8_t AtmosphereBuf[100];
+uint16_t AtmosphereBuf_len;
+
+
+/*避温模块API*/
+void Temperature(void)
+{
+		/*扫描485空气探头*/
+		if(TemperatureFlag)
+		{
+			TemperatureSensorScanTask();
+			TemperatureFlag = 0;
+		}
+		/*USART接收数据*/
+		if(t_osscomm_ReceiveMessage(infraredBuf, &infraredBuf_len, USART6)==SCOMM_RET_OK)
+		{
+				/*get left temperature sensor value*/
+				infrared_Parser(infraredBuf,infraredBuf_len,T_LEFT);
+				//DataProcessFlag = DataProcessFlag |0x01;
+		}	
+		if(t_osscomm_ReceiveMessage(infraredBuf, &infraredBuf_len, USART7)==SCOMM_RET_OK)
+		{
+				/*get right temperature sensor value*/
+				infrared_Parser(infraredBuf,infraredBuf_len,T_RIGHT);
+				//DataProcessFlag = DataProcessFlag |0x02;
+		}	
+		if(t_osscomm_ReceiveMessage(AtmosphereBuf, &AtmosphereBuf_len, USART8)==SCOMM_RET_OK)
+		{
+				/*get atmosphere temperature sensors value*/
+				Atmosphere_Parser(AtmosphereBuf,AtmosphereBuf_len);
+				//DataProcessFlag = DataProcessFlag |0x04;
+		}
+		/*USART 5 打印数据*/
+	#if DisplayData
+		DisplayTemperatureValue();
+	#endif
+		if(DataProcessFlag==0x07)
+		{
+			DataProcessFlag = 0;
+			TemperatureDataProcess();
+		}
+}
+
+
+
+
 
 void TemperatureInit(void)
 {
@@ -85,9 +138,11 @@ void infrared_Parser(uint8_t infraredBuf[],uint16_t txLen,uint8_t ID)
 		uint8_t i;
 	
 		/*accumulation*/
-		for(sumCheck=0,i=0;i<(infraredBuf[3]+4);i++)//infraredBuf[3]=4
-			sumCheck+=infraredBuf[i]; 
-		
+		if(infraredBuf[3]<=4)
+		{
+			for(sumCheck=0,i=0;i<(infraredBuf[3]+4);i++)//infraredBuf[3]=4
+				sumCheck+=infraredBuf[i]; 
+		}	
 		if(sumCheck==infraredBuf[i])//commpare
 		{
 			if(ID==T_LEFT)
@@ -97,8 +152,8 @@ void infrared_Parser(uint8_t infraredBuf[],uint16_t txLen,uint8_t ID)
 				TSensor[T_LEFT].TOLSB	=		infraredBuf[5];
 				TSensor[T_LEFT].TAMSB = 	infraredBuf[6];
 				TSensor[T_LEFT].TALSB	=		infraredBuf[7];
-				TSensor[T_LEFT].TOvalue = (infraredBuf[4]<<8)|infraredBuf[5];
-				TSensor[T_LEFT].TAvalue = (infraredBuf[6]<<8)|infraredBuf[7];
+				TSensor[T_LEFT].TOvalue = ((infraredBuf[4]<<8)|infraredBuf[5])/10;
+				TSensor[T_LEFT].TAvalue = ((infraredBuf[6]<<8)|infraredBuf[7])/10;
 			}
 			else if(ID==T_RIGHT)
 			{
@@ -107,8 +162,8 @@ void infrared_Parser(uint8_t infraredBuf[],uint16_t txLen,uint8_t ID)
 				TSensor[T_RIGHT].TOLSB	=		infraredBuf[5];
 				TSensor[T_RIGHT].TAMSB 	= 	infraredBuf[6];
 				TSensor[T_RIGHT].TALSB	=		infraredBuf[7];
-				TSensor[T_RIGHT].TOvalue = (infraredBuf[4]<<8)|infraredBuf[5];
-				TSensor[T_RIGHT].TAvalue = (infraredBuf[6]<<8)|infraredBuf[7];
+				TSensor[T_RIGHT].TOvalue = ((infraredBuf[4]<<8)|infraredBuf[5])/10;
+				TSensor[T_RIGHT].TAvalue = ((infraredBuf[6]<<8)|infraredBuf[7])/10;
 			}
 		}
 }
@@ -129,28 +184,24 @@ void AtmosphereClear(uint8_t begin,uint8_t end )
 		}
 }
 
-void TimingGetSensorStatusTask()
-{
-	 
-}
-
 
 /*K型热电偶探头数据处理*/
 void Atmosphere_Parser(uint8_t atmosphereBuf[],uint16_t txLen)
 {
 		uint8_t sumCheck;
-		uint16_t i;
+		uint8_t i;
 		uint8_t ID;
 		
 		/*accumulation*/
-		for(sumCheck=0,i=0;i<(atmosphereBuf[3]+4);i++)//atmosphereBuf[3]=4
-			sumCheck+=atmosphereBuf[i]; 
+		if(atmosphereBuf[3]<=4)
+		{
+			for(sumCheck=0,i=0;i<(atmosphereBuf[3]+4);i++)//atmosphereBuf[3]=4
+				sumCheck+=atmosphereBuf[i]; 
+		}
 		
 		if(sumCheck==atmosphereBuf[i++])//commpare
 		{
 				ID = atmosphereBuf[i];   //The last buf is the ID of sensor
-			
-				//AtmosphereClear(1,8);
 			
 				if(ID==T_M1)
 				{		
@@ -159,8 +210,8 @@ void Atmosphere_Parser(uint8_t atmosphereBuf[],uint16_t txLen)
 						TSensor[T_M1].TOLSB		=		atmosphereBuf[5];
 						TSensor[T_M1].TAMSB 	= 	atmosphereBuf[6];
 						TSensor[T_M1].TALSB		=		atmosphereBuf[7];
-						TSensor[T_M1].TOvalue = (atmosphereBuf[4]<<8)|atmosphereBuf[5];
-						TSensor[T_M1].TAvalue = (atmosphereBuf[6]<<8)|atmosphereBuf[7];
+						TSensor[T_M1].TOvalue = ((atmosphereBuf[4]<<8)|atmosphereBuf[5])/10;
+						TSensor[T_M1].TAvalue = ((atmosphereBuf[6]<<8)|atmosphereBuf[7])/10;
 				}
 				else if(ID==T_M2)
 					{
@@ -169,8 +220,8 @@ void Atmosphere_Parser(uint8_t atmosphereBuf[],uint16_t txLen)
 						TSensor[T_M2].TOLSB		=		atmosphereBuf[5];
 						TSensor[T_M2].TAMSB 	= 	atmosphereBuf[6];
 						TSensor[T_M2].TALSB		=		atmosphereBuf[7];
-						TSensor[T_M2].TOvalue = (atmosphereBuf[4]<<8)|atmosphereBuf[5];
-						TSensor[T_M2].TAvalue = (atmosphereBuf[6]<<8)|atmosphereBuf[7];
+						TSensor[T_M2].TOvalue = ((atmosphereBuf[4]<<8)|atmosphereBuf[5])/10;
+						TSensor[T_M2].TAvalue = ((atmosphereBuf[6]<<8)|atmosphereBuf[7])/10;
 					}
 				else if(ID==T_M3)
 					{
@@ -179,8 +230,8 @@ void Atmosphere_Parser(uint8_t atmosphereBuf[],uint16_t txLen)
 						TSensor[T_M3].TOLSB		=		atmosphereBuf[5];
 						TSensor[T_M3].TAMSB 	= 	atmosphereBuf[6];
 						TSensor[T_M3].TALSB		=		atmosphereBuf[7];
-						TSensor[T_M3].TOvalue = (atmosphereBuf[4]<<8)|atmosphereBuf[5];
-						TSensor[T_M3].TAvalue = (atmosphereBuf[6]<<8)|atmosphereBuf[7];
+						TSensor[T_M3].TOvalue = ((atmosphereBuf[4]<<8)|atmosphereBuf[5])/10;
+						TSensor[T_M3].TAvalue = ((atmosphereBuf[6]<<8)|atmosphereBuf[7])/10;
 					}
 				else if(ID==T_M4)
 					{
@@ -189,8 +240,8 @@ void Atmosphere_Parser(uint8_t atmosphereBuf[],uint16_t txLen)
 						TSensor[T_M4].TOLSB		=		atmosphereBuf[5];
 						TSensor[T_M4].TAMSB 	= 	atmosphereBuf[6];
 						TSensor[T_M4].TALSB		=		atmosphereBuf[7];
-						TSensor[T_M4].TOvalue = (atmosphereBuf[4]<<8)|atmosphereBuf[5];
-						TSensor[T_M4].TAvalue = (atmosphereBuf[6]<<8)|atmosphereBuf[7];
+						TSensor[T_M4].TOvalue = ((atmosphereBuf[4]<<8)|atmosphereBuf[5])/10;
+						TSensor[T_M4].TAvalue = ((atmosphereBuf[6]<<8)|atmosphereBuf[7])/10;
 					}
 		}
 }
@@ -222,8 +273,11 @@ uint8_t  * ScanAtmosphereSensor(void)
 /*扫描任务，标记*/
 void TemperatureTask(void)
 {
+	/*扫描传感器标志*/
 	if(!TemperatureFlag)
 		TemperatureFlag = 1;
+	/*刷新APP温度标志*/	
+	DataProcessFlag =0x07;
 }
 
 /*扫描空气探头*/
@@ -234,7 +288,7 @@ void TemperatureSensorScanTask(void)
 		uint8_t *temp;
 		temp = ScanAtmosphereSensor();
 		RS485_T;
-		SendFlag =t_osscomm_sendMessage(temp, 4, USART8);
+		SendFlag = t_osscomm_sendMessage(temp, 4, USART8);
 		systmr_quickWait(1);
 		RS485_R;
 }
@@ -246,13 +300,55 @@ void DisplayTemperatureValue(void)
 		for(i=1;i<7;i++)
 		{
 			if(TSensor[i].ConnectionState == SENSOR_CONNECTED)
-					printf("[%d]%4d ",i ,TSensor[i].TOvalue/10);
+					printf("[%d]%4d ",i ,TSensor[i].TOvalue);
 			else				
 					printf("[%d]%4d ",i ,0);
 
 		}
+		printf("[Body]%4d ",BodyTemperature);
 		printf("\r\n");
 }
+
+
+/*最大最小值*/
+void arrMaxMin(int a[], int begin, int end, int *max, int *min)  
+{  
+    if(end - begin <= 1) {  
+        if(a[end] > a[begin]) {  
+            *max = a[end];  
+            *min = a[begin];  
+        }  
+        else {  
+            *max = a[begin];  
+            *min = a[end];  
+        }  
+        return;  
+    }  
+  
+    int maxL, maxR;  
+    int minL, minR;  
+    arrMaxMin(a, begin, begin + (end - begin)/2, &maxL, &minL);  
+    arrMaxMin(a, begin + (end - begin)/2 + 1, end, &maxR, &minR);  
+    *max = maxL > maxR ? maxL : maxR;  
+    *min = minL > minR ? minR : minL;  
+}  
+
+/*温度值数据处理
+*目前使用最大值 20170526
+*/
+void TemperatureDataProcess(void)
+{
+	int MaxTemperature,MinTemperature;
+	int data[7];
+	int k;
+	for(k=1;k<8;k++)
+	{
+		data[k] = TSensor[k].TOvalue;
+	}
+	arrMaxMin(data,1,6,&MaxTemperature,&MinTemperature);
+	BodyTemperature = MaxTemperature;
+}
+
 
 /**
 *@
