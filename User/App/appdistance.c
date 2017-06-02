@@ -30,10 +30,13 @@ uint16_t distance10_v[4][D_FILTER_CNY]={0}; //4¸ö·½ÏòÕÏ°­ÎïµÄÁ¬Ğø10¸öÕÏ°­Îï¾àÀëÊ
 uint8_t distance10_v_index[4]={0}; //distance10_v[4][D_FILTER_CNY]´æ´¢µÄË÷Òı£¬Ã¿¸ö·½Ïò¶¼ÊÇ´æÂúD_FILTER_CNY¸öºó½øĞĞÆ½¾ù¹ıÂË
 distance_info_t global_distance; //¾àÀëĞÅÏ¢£¨¾­¹ı¹ıÂË´¦Àí£©
 volatile uint8_t getdistance_flag=0;  //1-Ã¿¸öÖÜÆÚ·¢ËÍÒ»´ÎÃüÁî»ñÈ¡´«¸ĞÆ÷Êı¾İ
+volatile uint8_t distance_recved_flag[4];  //ÓĞ½ÓÊÜµ½¾àÀëĞÅÏ¢µÄ±ê¼Ç
+volatile uint8_t distance_recved_validedtimecnt[4]; //½ÓÊÕµ½¾àÀëĞÅÏ¢µÄÓĞĞ§Ê±¼ä¼ÆÊı
 /* Private functions ---------------------------------------------------------*/
 uint16_t vlaue_avg_filter(const uint16_t *value, uint16_t num);
 uint8_t tof_radar_recv_handle(uint8_t *buf, uint16_t *buflen, uint8_t port, uint8_t distance_num);
 void get_distance_cmdTask(void);
+void no_recv_distance_Task(void);
 /**
   * @brief  appdistance_init
   * @param  None
@@ -44,6 +47,7 @@ void appdistance_init(void)
 	ToF_ContinuousStart();
 	radar_Start();
 	t_ostmr_insertTask(get_distance_cmdTask, 30000, OSTMR_PERIODIC);  
+	t_ostmr_insertTask(no_recv_distance_Task, 100, OSTMR_PERIODIC);  
 }
 /**
   * @brief  appdistance_prcs int main
@@ -86,11 +90,18 @@ void appdistance_prcs(void)
 		getdistance_flag = 0;
 		ToF_ContinuousStart();
 		radar_easy_Start();
-//		printf("distance sensor start\n");  //zkrt_debug
+//		printf("distance sensor start\n");
+	}
+	//²éÑ¯¾àÀëÊı¾İÓĞĞ§±ê¼Ç
+	if(!distance_recved_flag[RADAR_NUM])
+	{
+		global_distance.distance_data[RADAR_NUM] = 5000;
+//		printf("distace[%d]=%d\n", RADAR_NUM, global_distance.distance_data[RADAR_NUM]);  //zkrt_debug
 	}
 }
 /**
   * @brief  vlaue_avg_filter È¥×î¸ß×îµÍÇóÆ½¾ùÖµ
+
   * @param  None
   * @retval None
   */
@@ -167,7 +178,11 @@ uint8_t tof_radar_recv_handle(uint8_t *buf, uint16_t *buflen, uint8_t port, uint
 		if(port == RADIO_UCOM)
 		{
 			if(radar_parse(buf, *buflen, &distance10_v[distance_num][distance10_v_index[distance_num]]))
+			{
 				avg_enable = 1;
+				distance_recved_flag[RADAR_NUM] = 1;
+				distance_recved_validedtimecnt[RADAR_NUM] = 4; //400ms
+			}
 		}
 		else
 		{
@@ -181,7 +196,7 @@ uint8_t tof_radar_recv_handle(uint8_t *buf, uint16_t *buflen, uint8_t port, uint
 			{
 				distance10_v_index[distance_num] = 0;
 				global_distance.distance_data[distance_num] = vlaue_avg_filter(&distance10_v[distance_num][0], D_FILTER_CNY);
-				printf("distace[%d]=%d\n", distance_num, global_distance.distance_data[distance_num]);  //zkrt_debug
+//				printf("distace[%d]=%d\n", distance_num, global_distance.distance_data[distance_num]);  //zkrt_debug
 			}
 		}
 	}
@@ -197,6 +212,17 @@ void get_distance_cmdTask(void)
 	if(!getdistance_flag)
 	{
 		getdistance_flag = 1;
+	}	
+}	
+void no_recv_distance_Task(void)
+{
+	if(distance_recved_validedtimecnt[RADAR_NUM])
+	{
+		distance_recved_validedtimecnt[RADAR_NUM]--;
+		if(!distance_recved_validedtimecnt[RADAR_NUM])
+		{
+			distance_recved_flag[RADAR_NUM] = 0;
+		}
 	}	
 }	
 /**
