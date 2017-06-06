@@ -18,6 +18,7 @@
 #include "ToFSensorOP.h"
 #include "osusart.h"
 #include "commonzkrt.h"
+#include "appdistance.h"
 
 /**
   * @brief  传感器返回的数据包解析
@@ -118,6 +119,9 @@ void ToF_ContinuousStart(void)
 {
 	U8 comm[] = {0x0A, 0x24, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x0F, 0x72};
 //	enableEXINT0();
+#ifndef USE_RADAR_FUN	
+	t_osscomm_sendMessage(comm, 10, USART1);
+#endif	
 	t_osscomm_sendMessage(comm, 10, USART2);
 	t_osscomm_sendMessage(comm, 10, USART3);
 	t_osscomm_sendMessage(comm, 10, USART4);
@@ -231,25 +235,19 @@ U8 ToF_parse(U8 *packet, U16 packet_len, U16 *distance)
 	dbuf.ambient_adc = packet[10];
 	dbuf.precision = (packet[11] << 8)|packet[12];
 
-//	if(dbuf.distance >=3200)  //不可信  //zkrt_debug
-//	{
-//		return 0;
-//	}	
-	
 	if((float)((dbuf.magnitude)/100) < 43) //不可信时，将距离数据修改为无效数据
 	{
-		*distance = 5000;
+		*distance = DISTANCE_NONE;
 		return 1;
 	}
-	
 	
 	*distance = dbuf.distance;  //unit:cm
 	
 	if(*distance >5000)  //zkrt_notice:务必放在最后，如果此处还需要做数据处理务必考虑此处
-		*distance = 6000;
+		*distance = DISTANCE_2HIGH;
 	
 	if(*distance <30)  //zkrt_notice:务必放在最后，如果此处还需要做数据处理务必考虑此处
-		*distance = 7000;
+		*distance = DISTANCE_2LOW;
 	
 	return 1;	
 }

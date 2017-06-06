@@ -18,6 +18,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "radar.h"
 #include "osusart.h"
+#include "appdistance.h"
 
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
@@ -179,10 +180,10 @@ uint8_t radar_parse(const uint8_t *packet, uint16_t packet_len, uint16_t *distan
 //	info.snr = packet[11]-127;	
 	*distance = info.range;
 	if(*distance >5000)  //zkrt_notice:务必放在最后，如果此处还需要做数据处理务必考虑此处
-		*distance = 6000;
+		*distance = DISTANCE_2HIGH;
 	
 	if(*distance <30)  //zkrt_notice:务必放在最后，如果此处还需要做数据处理务必考虑此处
-		*distance = 7000;
+		*distance = DISTANCE_2LOW;
 	
 	return 1;	
 }

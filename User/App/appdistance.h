@@ -37,7 +37,17 @@ typedef struct
 }distance_info_t;	
 /* Exported constants --------------------------------------------------------*/
 
+//distance meaning
+#define DISTANCE_NONE                 5000
+#define DISTANCE_2LOW                 7000   //<30
+#define DISTANCE_2HIGH                8000   //>5000
 
+//distacne position adjust
+////DJI植保飞机
+#define D_P_FRONT                     65      //zkrt_todo 视实际安装情况，宏值做调整。
+#define D_P_LEFT                      65
+#define D_P_BACK                      65
+#define D_P_RIGHT                     65
 
 /* Exported functions ------------------------------------------------------- */
 void appdistance_prcs(void);
