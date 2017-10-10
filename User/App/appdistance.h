@@ -42,12 +42,15 @@ typedef struct
 #define DISTANCE_2LOW                 7000   //<30
 #define DISTANCE_2HIGH                8000   //>5000
 
-//distacne position adjust
+//distacne position adjust 根据轴距
+////A1 PRO
+//#define DPA_VAL												100
 ////DJI植保飞机
-#define D_P_FRONT                     65      //zkrt_todo 视实际安装情况，宏值做调整。
-#define D_P_LEFT                      65
-#define D_P_BACK                      65
-#define D_P_RIGHT                     65
+#define DPA_VAL												65
+#define D_P_FRONT                     DPA_VAL      //zkrt_todo 视实际安装情况，宏值做调整。
+#define D_P_LEFT                      DPA_VAL
+#define D_P_BACK                      DPA_VAL
+#define D_P_RIGHT                     DPA_VAL
 
 /* Exported functions ------------------------------------------------------- */
 void appdistance_prcs(void);
