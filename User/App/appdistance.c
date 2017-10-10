@@ -19,7 +19,9 @@
 #include "sys.h"
 #include "osusart.h"
 #include "appdistance.h"
+#ifdef USE_RADAR_FUN	
 #include "radar.h"
+#endif
 #include "ToFSensorOP.h"
 /* Private macro -------------------------------------------------------------*/
 #define D_FILTER_CNY    1    //¹ıÂË¸öÊı
@@ -30,10 +32,15 @@ uint16_t distance10_v[4][D_FILTER_CNY]={0}; //4¸ö·½ÏòÕÏ°­ÎïµÄÁ¬Ğø10¸öÕÏ°­Îï¾àÀëÊ
 uint8_t distance10_v_index[4]={0}; //distance10_v[4][D_FILTER_CNY]´æ´¢µÄË÷Òı£¬Ã¿¸ö·½Ïò¶¼ÊÇ´æÂúD_FILTER_CNY¸öºó½øĞĞÆ½¾ù¹ıÂË
 distance_info_t global_distance; //¾àÀëĞÅÏ¢£¨¾­¹ı¹ıÂË´¦Àí£©
 volatile uint8_t getdistance_flag=0;  //1-Ã¿¸öÖÜÆÚ·¢ËÍÒ»´ÎÃüÁî»ñÈ¡´«¸ĞÆ÷Êı¾İ
+volatile uint8_t distance_recved_flag[4];  //ÓĞ½ÓÊÜµ½¾àÀëĞÅÏ¢µÄ±ê¼Ç
+volatile uint8_t distance_recved_validedtimecnt[4]; //½ÓÊÕµ½¾àÀëĞÅÏ¢µÄÓĞĞ§Ê±¼ä¼ÆÊı
+
+const uint16_t distance_position[4]= {D_P_FRONT, D_P_LEFT, D_P_BACK, D_P_RIGHT};   //¾àÀë´«¸ĞÆ÷°²×°Î»ÖÃ¶¨Òå---Ïà¶ÔÓÚ»úÌåµÄ×îÔ¶Î»ÖÃ£¨Ò»°ãÊÇ»ú½¬£©
 /* Private functions ---------------------------------------------------------*/
 uint16_t vlaue_avg_filter(const uint16_t *value, uint16_t num);
 uint8_t tof_radar_recv_handle(uint8_t *buf, uint16_t *buflen, uint8_t port, uint8_t distance_num);
 void get_distance_cmdTask(void);
+void no_recv_distance_Task(void);
 /**
   * @brief  appdistance_init
   * @param  None
@@ -42,8 +49,11 @@ void get_distance_cmdTask(void);
 void appdistance_init(void)
 {
 	ToF_ContinuousStart();
+#ifdef USE_RADAR_FUN		
 	radar_Start();
-	t_ostmr_insertTask(get_distance_cmdTask, 30000, OSTMR_PERIODIC);  
+#endif	
+	t_ostmr_insertTask(get_distance_cmdTask, 30000, OSTMR_PERIODIC);  	
+	t_ostmr_insertTask(no_recv_distance_Task, 100, OSTMR_PERIODIC);
 }
 /**
   * @brief  appdistance_prcs int main
@@ -52,6 +62,7 @@ void appdistance_init(void)
   */
 void appdistance_prcs(void)
 {
+	int i;
 	char ret=0;
 	//handle radar
 	ret = tof_radar_recv_handle(distance_utbuf, &dutbuf_len, RADIO_UCOM, RADAR_NUM);
@@ -85,12 +96,24 @@ void appdistance_prcs(void)
 	{
 		getdistance_flag = 0;
 		ToF_ContinuousStart();
+#ifdef USE_RADAR_FUN
 		radar_easy_Start();
-//		printf("distance sensor start\n");  //zkrt_debug
+#endif
+//		printf("distance sensor start\n");
+	}
+	//²éÑ¯¾àÀëÊı¾İÓĞĞ§±ê¼Ç
+	for(i=0; i<4; i++)
+	{
+		if((!distance_recved_flag[i])&&(global_distance.distance_data[i])!=DISTANCE_NONE)  
+		{
+			global_distance.distance_data[i] = DISTANCE_NONE;
+	//		printf("distace[%d]=%d\n", RADAR_NUM, global_distance.distance_data[RADAR_NUM]);  //zkrt_debug
+		}
 	}
 }
 /**
   * @brief  vlaue_avg_filter È¥×î¸ß×îµÍÇóÆ½¾ùÖµ
+
   * @param  None
   * @retval None
   */
@@ -161,27 +184,64 @@ uint8_t tof_radar_recv_handle(uint8_t *buf, uint16_t *buflen, uint8_t port, uint
 {
 	char ret =0;
 	char avg_enable=0;
+	uint16_t *this_distance = &distance10_v[distance_num][distance10_v_index[distance_num]];
+		
+//´®¿ÚÊı¾İ½ÓÊÕ£¬½âÎö´¦Àí
 	if(t_osscomm_ReceiveMessage(buf, buflen, UsartInstance[port])==SCOMM_RET_OK)
 	{
 		ret =1;
+#ifdef USE_RADAR_FUN		
 		if(port == RADIO_UCOM)
 		{
 			if(radar_parse(buf, *buflen, &distance10_v[distance_num][distance10_v_index[distance_num]]))
+			{
 				avg_enable = 1;
+			}
 		}
 		else
 		{
 			if(ToF_parse(buf, *buflen, &distance10_v[distance_num][distance10_v_index[distance_num]]))
+			{
 				avg_enable = 1;
-		}	
+			}	
+		}
+#else
+		if(ToF_parse(buf, *buflen, &distance10_v[distance_num][distance10_v_index[distance_num]]))
+		{
+			avg_enable = 1;
+		}
+#endif
+//¾àÀëÊı¾İµ÷ÕûºÍ¹ıÂË
 		if(avg_enable)
 		{
+			//½ÓÊÕµ½¾àÀëÊı¾İµÄ±ê¼ÇÖÃÎ»
+			distance_recved_flag[distance_num] = 1;              //½ÓÊÕ±ê¼Ç
+			distance_recved_validedtimecnt[distance_num] = 4;    //400ms
+			//°²×°Î»ÖÃµ÷Õû¹ıÂË
+		  if(*this_distance >=distance_position[distance_num])
+			{
+				if(*this_distance < DISTANCE_NONE)
+				{
+					//×öÎ»ÖÃ¹ıÂË
+					*this_distance = (*this_distance) - distance_position[distance_num];
+				}
+        else
+        {//>=DISTANCE_NONEµÈÌØÊâÊı¾İÖµ²»ĞèÒª¹ıÂË
+				}					
+			}
+			else
+			{//´«¸ĞÆ÷¾àÀëÊı¾İĞ¡ÓÚ°²×°Î»ÖÃÊ±£¬¾àÀëÖÃÎª0
+				*this_distance = 0;
+//				printf("distace[%d]=%d < install position!\n", distance_num, *this_distance);
+			}
+			
+			//Æ½¾ù¹ıÂË
 			distance10_v_index[distance_num]++;
 			if(distance10_v_index[distance_num] ==D_FILTER_CNY)
 			{
 				distance10_v_index[distance_num] = 0;
 				global_distance.distance_data[distance_num] = vlaue_avg_filter(&distance10_v[distance_num][0], D_FILTER_CNY);
-				printf("distace[%d]=%d\n", distance_num, global_distance.distance_data[distance_num]);  //zkrt_debug
+//				printf("distace[%d]=%d\n", distance_num, global_distance.distance_data[distance_num]);  //zkrt_debug
 			}
 		}
 	}
@@ -199,6 +259,21 @@ void get_distance_cmdTask(void)
 		getdistance_flag = 1;
 	}	
 }	
+void no_recv_distance_Task(void)
+{
+	int i;
+	for(i=0; i<4; i++)
+	{
+		if(distance_recved_validedtimecnt[i])
+		{
+			distance_recved_validedtimecnt[i]--;
+			if(!distance_recved_validedtimecnt[i])
+			{
+				distance_recved_flag[i] = 0;
+			}
+		}
+	}
+}
 /**
 *@
 */

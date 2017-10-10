@@ -21,6 +21,8 @@
 #include "stm32f0xx.h"
 
 /* Exported macro ------------------------------------------------------------*/
+//#define USE_RADAR_FUN
+#define DisplayData  0  //zkrt_debug
 
 /** @defgroup hardware open or close control
   * @{

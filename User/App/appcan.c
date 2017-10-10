@@ -54,7 +54,7 @@ void appcan_hb_pack(void)
 	Upload_info_st.left_D = global_distance.distance_data[LEFT_NUM];
 	Upload_info_st.back_D = global_distance.distance_data[BACK_NUM];
 	Upload_info_st.right_D = global_distance.distance_data[RIGHT_NUM];
-	//temperature pack  //zkrt_todo: 温度封包 曾工赶紧做
+	//temperature pack
 	Upload_info_st.left_T  = TSensor[T_LEFT].TOvalue;
 	Upload_info_st.right_T = TSensor[T_RIGHT].TOvalue;
 	Upload_info_st.m1_T = TSensor[T_M1].TOvalue;
