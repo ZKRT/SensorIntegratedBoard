@@ -28,7 +28,6 @@
 #define RS485_T   GPIO_SetBits(RS485_PORT,RS485_PIN)
 #define RS485_R		GPIO_ResetBits(RS485_PORT,RS485_PIN)
 	
-#define DisplayData  1
 	
 typedef enum SENSOR_INDEX
 {
