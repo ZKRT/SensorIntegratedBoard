@@ -44,9 +44,9 @@ typedef struct
 
 //distacne position adjust 根据轴距
 ////A1 PRO
-//#define DPA_VAL												100
+#define DPA_VAL												100
 ////DJI植保飞机
-#define DPA_VAL												65
+//#define DPA_VAL												65
 #define D_P_FRONT                     DPA_VAL      //zkrt_todo 视实际安装情况，宏值做调整。
 #define D_P_LEFT                      DPA_VAL
 #define D_P_BACK                      DPA_VAL
