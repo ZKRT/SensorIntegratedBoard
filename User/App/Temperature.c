@@ -343,9 +343,10 @@ void TemperatureDataProcess(void)
 	int k;
 	for(k=1;k<8;k++)
 	{
-		if(TSensor[k].TOvalue>=400 || TSensor[k].TOvalue<-40)
-			TSensor[k].TOvalue = 0;
-		data[k] = TSensor[k].TOvalue;
+		if(TSensor[k].TOvalue>=4900 || TSensor[k].TOvalue<-340)
+			data[k] = 0;
+		else
+			data[k] = TSensor[k].TOvalue;
 	}
 	arrMaxMin(data,1,6,&MaxTemperature,&MinTemperature);
 	BodyTemperature = MaxTemperature;
